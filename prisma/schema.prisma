@@ -1,0 +1,28 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
+}
+
+model Guest {
+  id          String    @id @default(uuid())
+  name        String
+  email       String    @unique
+  token       String    @unique @default(uuid())
+  rsvpStatus  String    @default("pending") // pending | attending | not_attending
+  rsvpAt      DateTime?
+  invitedAt   DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Settings {
+  id           Int      @id @default(1)
+  address      String   @default("")
+  mapsEmbedUrl String   @default("")
+  customText   String   @default("[ Il testo dell'invito verrà inserito qui ]")
+  updatedAt    DateTime @updatedAt
+}
