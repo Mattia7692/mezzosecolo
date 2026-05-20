@@ -35,8 +35,27 @@ function RsvpBadge({ status }) {
 
 // ---- Section components ----
 
+function isoFromItalian(dateStr) {
+  const months = { gennaio: 1, febbraio: 2, marzo: 3, aprile: 4, maggio: 5, giugno: 6, luglio: 7, agosto: 8, settembre: 9, ottobre: 10, novembre: 11, dicembre: 12 }
+  const match = dateStr?.match(/(\d+)\s+(\w+)\s+(\d{4})/)
+  if (!match) return '2026-06-18'
+  const day = match[1].padStart(2, '0')
+  const month = months[match[2].toLowerCase()]
+  const year = match[3]
+  if (!month) return '2026-06-18'
+  return `${year}-${String(month).padStart(2, '0')}-${day}`
+}
+
+function italianFromIso(iso) {
+  if (!iso) return ''
+  const d = new Date(iso + 'T12:00:00')
+  const s = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
 function SettingsSection() {
   const [form, setForm] = useState({ address: '', eventDate: 'Giovedì 18 Giugno 2026', eventTime: 'dalle ore 19:00 in poi', customText: '' })
+  const [dateIso, setDateIso] = useState('2026-06-18')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -45,16 +64,24 @@ function SettingsSection() {
     fetch('/api/settings')
       .then((r) => r.json())
       .then((data) => {
+        const eventDate = data.eventDate || 'Giovedì 18 Giugno 2026'
         setForm({
           address: data.address || '',
-          eventDate: data.eventDate || 'Giovedì 18 Giugno 2026',
+          eventDate,
           eventTime: data.eventTime || 'dalle ore 19:00 in poi',
           customText: data.customText || '',
         })
+        setDateIso(isoFromItalian(eventDate))
         setLoading(false)
       })
       .catch(() => setLoading(false))
   }, [])
+
+  function handleDateChange(e) {
+    const iso = e.target.value
+    setDateIso(iso)
+    if (iso) setForm((f) => ({ ...f, eventDate: italianFromIso(iso) }))
+  }
 
   async function handleSave(e) {
     e.preventDefault()
@@ -86,12 +113,15 @@ function SettingsSection() {
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">Data evento</label>
           <input
-            type="text"
-            value={form.eventDate}
-            onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
-            placeholder="Giovedì 18 Giugno 2026"
-            className="w-full px-4 py-2.5 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+            type="date"
+            value={dateIso}
+            onChange={handleDateChange}
+            className="w-full px-4 py-2.5 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:border-yellow-500"
+            style={{ colorScheme: 'dark' }}
           />
+          {form.eventDate && (
+            <p className="text-xs text-gray-400 mt-1">{form.eventDate}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">Orario</label>
@@ -154,7 +184,15 @@ function SettingsSection() {
         </button>
         <button
           type="button"
-          onClick={() => window.open('/api/preview', '_blank')}
+          onClick={() => {
+            const params = new URLSearchParams({
+              address: form.address,
+              eventDate: form.eventDate,
+              eventTime: form.eventTime,
+              customText: form.customText,
+            })
+            window.open(`/api/preview?${params}`, '_blank')
+          }}
           className="px-6 py-2.5 rounded-lg font-semibold border transition-all"
           style={{ borderColor: '#c9a84c', color: '#c9a84c', background: 'transparent', cursor: 'pointer' }}
         >
