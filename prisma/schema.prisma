@@ -24,5 +24,7 @@ model Settings {
   address      String   @default("")
   mapsEmbedUrl String   @default("")
   customText   String   @default("[ Il testo dell'invito verrà inserito qui ]")
+  eventDate    String   @default("Giovedì 18 Giugno 2026")
+  eventTime    String   @default("dalle ore 19:00 in poi")
   updatedAt    DateTime @updatedAt
 }

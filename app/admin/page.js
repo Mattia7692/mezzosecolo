@@ -36,7 +36,7 @@ function RsvpBadge({ status }) {
 // ---- Section components ----
 
 function SettingsSection() {
-  const [form, setForm] = useState({ address: '', mapsEmbedUrl: '', customText: '' })
+  const [form, setForm] = useState({ address: '', eventDate: 'Giovedì 18 Giugno 2026', eventTime: 'dalle ore 19:00 in poi', customText: '' })
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -47,7 +47,8 @@ function SettingsSection() {
       .then((data) => {
         setForm({
           address: data.address || '',
-          mapsEmbedUrl: data.mapsEmbedUrl || '',
+          eventDate: data.eventDate || 'Giovedì 18 Giugno 2026',
+          eventTime: data.eventTime || 'dalle ore 19:00 in poi',
           customText: data.customText || '',
         })
         setLoading(false)
@@ -81,6 +82,29 @@ function SettingsSection() {
 
   return (
     <form onSubmit={handleSave} className="space-y-5">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Data evento</label>
+          <input
+            type="text"
+            value={form.eventDate}
+            onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
+            placeholder="Giovedì 18 Giugno 2026"
+            className="w-full px-4 py-2.5 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Orario</label>
+          <input
+            type="text"
+            value={form.eventTime}
+            onChange={(e) => setForm({ ...form, eventTime: e.target.value })}
+            placeholder="dalle ore 19:00 in poi"
+            className="w-full px-4 py-2.5 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+          />
+        </div>
+      </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-1">Indirizzo festa</label>
         <input
@@ -90,22 +114,6 @@ function SettingsSection() {
           placeholder="Via Roma 1, Milano"
           className="w-full px-4 py-2.5 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
         />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          URL Google Maps embed
-        </label>
-        <input
-          type="url"
-          value={form.mapsEmbedUrl}
-          onChange={(e) => setForm({ ...form, mapsEmbedUrl: e.target.value })}
-          placeholder="https://www.google.com/maps/embed?pb=..."
-          className="w-full px-4 py-2.5 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
-        />
-        <p className="text-xs text-gray-400 mt-1">
-          Vai su maps.google.com → cerca l'indirizzo → Condividi → Incorpora mappa → copia l'URL del <code>src</code>
-        </p>
       </div>
 
       <div>
@@ -131,18 +139,28 @@ function SettingsSection() {
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={saving}
-        className="px-6 py-2.5 rounded-lg font-semibold transition-all"
-        style={{
-          background: saving ? 'rgba(201,168,76,0.5)' : '#c9a84c',
-          color: '#1a1a2e',
-          cursor: saving ? 'not-allowed' : 'pointer',
-        }}
-      >
-        {saving ? 'Salvataggio…' : 'Salva impostazioni'}
-      </button>
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          disabled={saving}
+          className="px-6 py-2.5 rounded-lg font-semibold transition-all"
+          style={{
+            background: saving ? 'rgba(201,168,76,0.5)' : '#c9a84c',
+            color: '#1a1a2e',
+            cursor: saving ? 'not-allowed' : 'pointer',
+          }}
+        >
+          {saving ? 'Salvataggio…' : 'Salva impostazioni'}
+        </button>
+        <button
+          type="button"
+          onClick={() => window.open('/api/preview', '_blank')}
+          className="px-6 py-2.5 rounded-lg font-semibold border transition-all"
+          style={{ borderColor: '#c9a84c', color: '#c9a84c', background: 'transparent', cursor: 'pointer' }}
+        >
+          Anteprima email
+        </button>
+      </div>
     </form>
   )
 }

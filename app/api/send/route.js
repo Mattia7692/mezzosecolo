@@ -49,8 +49,9 @@ export async function POST(request) {
           name: guest.name,
           token: guest.token,
           address: settings.address,
-          mapsEmbedUrl: settings.mapsEmbedUrl,
           customText: settings.customText,
+          eventDate: settings.eventDate,
+          eventTime: settings.eventTime,
         })
 
         await resend.emails.send({
