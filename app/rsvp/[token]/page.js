@@ -8,6 +8,7 @@ export default function RsvpPage() {
   const token = params.token
 
   const [guest, setGuest] = useState(null)
+  const [settings, setSettings] = useState({ eventDate: '18 Giugno 2026', eventTime: 'dalle ore 19:00' })
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -15,19 +16,26 @@ export default function RsvpPage() {
   const [step, setStep] = useState('main') // 'main' | 'party-size'
 
   useEffect(() => {
-    async function fetchGuest() {
+    async function fetchData() {
       try {
-        const res = await fetch(`/api/rsvp/${token}`)
-        if (res.status === 404) { setNotFound(true); return }
-        const data = await res.json()
-        setGuest(data)
+        const [guestRes, settingsRes] = await Promise.all([
+          fetch(`/api/rsvp/${token}`),
+          fetch('/api/settings'),
+        ])
+        if (guestRes.status === 404) { setNotFound(true); return }
+        const guestData = await guestRes.json()
+        setGuest(guestData)
+        if (settingsRes.ok) {
+          const s = await settingsRes.json()
+          setSettings({ eventDate: s.eventDate, eventTime: s.eventTime })
+        }
       } catch {
         setNotFound(true)
       } finally {
         setLoading(false)
       }
     }
-    if (token) fetchGuest()
+    if (token) fetchData()
   }, [token])
 
   async function handleRsvp(status, partySize = 1) {
@@ -110,11 +118,11 @@ export default function RsvpPage() {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <div className="p-4 rounded-lg text-center" style={{ background: '#f5f0e8', border: '1px solid #e8e0d0' }}>
             <p style={{ fontSize: '11px', letterSpacing: '3px', color: '#c9a84c', textTransform: 'uppercase', marginBottom: '4px' }}>Quando</p>
-            <p style={{ color: '#2d2d2d', fontWeight: 600 }}>18 Giugno 2026</p>
-            <p style={{ color: '#6a6a6a', fontSize: '14px' }}>dalle ore 19:00</p>
+            <p style={{ color: '#2d2d2d', fontWeight: 600 }}>{settings.eventDate}</p>
+            <p style={{ color: '#6a6a6a', fontSize: '14px' }}>{settings.eventTime}</p>
           </div>
           <div className="p-4 rounded-lg text-center" style={{ background: '#f5f0e8', border: '1px solid #e8e0d0' }}>
-            <p style={{ fontSize: '11px', letterSpacing: '3px', color: '#c9a84c', textTransform: 'uppercase', marginBottom: '4px' }}>Giovedì</p>
+            <p style={{ fontSize: '11px', letterSpacing: '3px', color: '#c9a84c', textTransform: 'uppercase', marginBottom: '4px' }}>Ti aspettiamo</p>
             <p style={{ color: '#2d2d2d', fontWeight: 600 }}>Segna in agenda!</p>
             <p style={{ color: '#6a6a6a', fontSize: '14px' }}>Ci vediamo lì 🥂</p>
           </div>

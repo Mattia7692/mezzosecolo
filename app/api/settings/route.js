@@ -22,7 +22,7 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const { address, mapsEmbedUrl, customText } = await request.json()
+    const { address, mapsEmbedUrl, customText, eventDate, eventTime } = await request.json()
 
     const settings = await prisma.settings.upsert({
       where: { id: 1 },
@@ -30,12 +30,16 @@ export async function POST(request) {
         address: address ?? '',
         mapsEmbedUrl: mapsEmbedUrl ?? '',
         customText: customText ?? '',
+        eventDate: eventDate ?? 'Giovedì 18 Giugno 2026',
+        eventTime: eventTime ?? 'dalle ore 19:00 in poi',
       },
       create: {
         id: 1,
         address: address ?? '',
         mapsEmbedUrl: mapsEmbedUrl ?? '',
         customText: customText ?? "[ Il testo dell'invito verrà inserito qui ]",
+        eventDate: eventDate ?? 'Giovedì 18 Giugno 2026',
+        eventTime: eventTime ?? 'dalle ore 19:00 in poi',
       },
     })
 
