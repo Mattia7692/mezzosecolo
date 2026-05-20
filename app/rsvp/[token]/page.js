@@ -122,7 +122,7 @@ export default function RsvpPage() {
             <p style={{ color: '#6a6a6a', fontSize: '14px' }}>{settings.eventTime}</p>
           </div>
           <div className="p-4 rounded-lg text-center" style={{ background: '#f5f0e8', border: '1px solid #e8e0d0' }}>
-            <p style={{ fontSize: '11px', letterSpacing: '3px', color: '#c9a84c', textTransform: 'uppercase', marginBottom: '4px' }}>Ti aspettiamo</p>
+            <p style={{ fontSize: '11px', letterSpacing: '3px', color: '#c9a84c', textTransform: 'uppercase', marginBottom: '4px' }}>Ti aspetto</p>
             <p style={{ color: '#2d2d2d', fontWeight: 600 }}>Segna in agenda!</p>
             <p style={{ color: '#6a6a6a', fontSize: '14px' }}>Ci vediamo lì 🥂</p>
           </div>
