@@ -132,6 +132,7 @@ export default function RsvpPage() {
         {confirmed || (alreadyAnswered && step === 'main') ? (
           <ConfirmationMessage
             guest={guest}
+            settings={settings}
             onChangeResponse={() => { setConfirmed(false); setStep('main'); setGuest({ ...guest, rsvpStatus: 'pending' }) }}
           />
         ) : step === 'party-size' ? (
@@ -306,7 +307,7 @@ function AlreadyAnsweredSection({ guest, onAttending, onNotAttending, submitting
   )
 }
 
-function ConfirmationMessage({ guest, onChangeResponse }) {
+function ConfirmationMessage({ guest, settings, onChangeResponse }) {
   const isAttending = guest.rsvpStatus === 'attending'
 
   return (
@@ -316,7 +317,7 @@ function ConfirmationMessage({ guest, onChangeResponse }) {
         {isAttending ? 'Fantastico!' : 'Mi dispiace'}
       </h3>
       <p className="text-gray-500 text-lg mb-2">
-        {isAttending ? 'Ti aspetto il 18 Giugno 🥂' : 'Ci mancherai! 💙'}
+        {isAttending ? `Ti aspetto il ${settings.eventDate} 🥂` : 'Ci mancherai! 💙'}
       </p>
       {isAttending && guest.partySize > 1 && (
         <p className="text-sm text-gray-400 mb-4">
