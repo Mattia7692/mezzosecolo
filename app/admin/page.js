@@ -393,6 +393,7 @@ function GuestsSection({ guests, onRefresh }) {
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Nome</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Email</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Stato RSVP</th>
+                <th className="text-left px-4 py-3 text-gray-400 font-medium">Persone</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Risposta</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Invito inviato</th>
                 <th className="text-right px-4 py-3 text-gray-400 font-medium">Azioni</th>
@@ -408,6 +409,13 @@ function GuestsSection({ guests, onRefresh }) {
                   <td className="px-4 py-3 text-gray-300">{guest.email}</td>
                   <td className="px-4 py-3">
                     <RsvpBadge status={guest.rsvpStatus} />
+                  </td>
+                  <td className="px-4 py-3 text-gray-300 text-sm">
+                    {guest.rsvpStatus === 'attending' ? (
+                      <span className="font-semibold" style={{ color: '#34d399' }}>{guest.partySize || 1}</span>
+                    ) : (
+                      <span className="text-gray-600">—</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-gray-400 text-xs">{formatDate(guest.rsvpAt)}</td>
                   <td className="px-4 py-3 text-gray-400 text-xs">
@@ -457,17 +465,19 @@ function StatsSection({ guests }) {
   const notAttending = guests.filter((g) => g.rsvpStatus === 'not_attending').length
   const pending = guests.filter((g) => g.rsvpStatus === 'pending').length
   const invited = guests.filter((g) => g.invitedAt).length
+  const totalExpected = guests.filter((g) => g.rsvpStatus === 'attending').reduce((sum, g) => sum + (g.partySize || 1), 0)
 
   const stats = [
     { label: 'Ospiti totali', value: total, color: '#c9a84c' },
     { label: 'Inviti inviati', value: invited, color: '#818cf8' },
     { label: 'Parteciperà', value: attending, color: '#4ade80' },
+    { label: 'Persone attese', value: totalExpected, color: '#34d399' },
     { label: 'Non verrà', value: notAttending, color: '#f87171' },
     { label: 'In attesa', value: pending, color: '#9ca3af' },
   ]
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
       {stats.map((s) => (
         <div
           key={s.label}

@@ -11,6 +11,7 @@ export async function GET(request, { params }) {
         id: true,
         name: true,
         rsvpStatus: true,
+        partySize: true,
         rsvpAt: true,
       },
     })
@@ -29,7 +30,7 @@ export async function GET(request, { params }) {
 export async function POST(request, { params }) {
   try {
     const { token } = params
-    const { status } = await request.json()
+    const { status, partySize } = await request.json()
 
     if (!['attending', 'not_attending'].includes(status)) {
       return NextResponse.json({ error: 'Status non valido' }, { status: 400 })
@@ -45,12 +46,14 @@ export async function POST(request, { params }) {
       where: { token },
       data: {
         rsvpStatus: status,
+        partySize: status === 'attending' && partySize >= 1 ? partySize : 1,
         rsvpAt: new Date(),
       },
       select: {
         id: true,
         name: true,
         rsvpStatus: true,
+        partySize: true,
         rsvpAt: true,
       },
     })
