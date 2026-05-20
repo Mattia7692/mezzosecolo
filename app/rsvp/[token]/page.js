@@ -207,7 +207,7 @@ function PartySizeStep({ onConfirm, onBack, submitting }) {
       </div>
 
       <div className="grid grid-cols-4 gap-2">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+        {[1, 2, 3, 4].map((n) => (
           <button
             key={n}
             onClick={() => setSelected(n)}
