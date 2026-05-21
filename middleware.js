@@ -17,6 +17,7 @@ export function middleware(request) {
     /^\/api\/auth\//,
     /^\/rsvp\//,
     /^\/api\/rsvp\//,
+    /^\/api\/settings$/,
     /^\/_next\//,
     /^\/favicon\.ico/,
   ]

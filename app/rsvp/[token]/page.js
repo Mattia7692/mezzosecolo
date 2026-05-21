@@ -18,21 +18,24 @@ export default function RsvpPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [guestRes, settingsRes] = await Promise.all([
-          fetch(`/api/rsvp/${token}`),
-          fetch('/api/settings'),
-        ])
+        const guestRes = await fetch(`/api/rsvp/${token}`)
         if (guestRes.status === 404) { setNotFound(true); return }
         const guestData = await guestRes.json()
         setGuest(guestData)
+      } catch {
+        setNotFound(true)
+      } finally {
+        setLoading(false)
+      }
+
+      try {
+        const settingsRes = await fetch('/api/settings')
         if (settingsRes.ok) {
           const s = await settingsRes.json()
           setSettings({ eventDate: s.eventDate, eventTime: s.eventTime })
         }
       } catch {
-        setNotFound(true)
-      } finally {
-        setLoading(false)
+        // usa i valori di default
       }
     }
     if (token) fetchData()
