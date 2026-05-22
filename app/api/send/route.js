@@ -56,6 +56,7 @@ export async function POST(request) {
 
         await resend.emails.send({
           from: 'Mattia Baldini <mattia@mail.mattiabaldini.com>',
+          replyTo: 'mattia@mattiabaldini.com',
           to: guest.email,
           subject: 'Sei invitato/a al mio Mezzo Secolo! 🎂',
           html,
