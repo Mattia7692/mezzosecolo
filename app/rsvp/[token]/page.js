@@ -8,7 +8,7 @@ export default function RsvpPage() {
   const token = params.token
 
   const [guest, setGuest] = useState(null)
-  const [settings, setSettings] = useState({ eventDate: '18 Giugno 2026', eventTime: 'dalle ore 19:00' })
+  const [settings, setSettings] = useState(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -18,24 +18,23 @@ export default function RsvpPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const guestRes = await fetch(`/api/rsvp/${token}`)
+        const [guestRes, settingsRes] = await Promise.all([
+          fetch(`/api/rsvp/${token}`),
+          fetch('/api/settings'),
+        ])
         if (guestRes.status === 404) { setNotFound(true); return }
         const guestData = await guestRes.json()
         setGuest(guestData)
+        if (settingsRes.ok) {
+          const s = await settingsRes.json()
+          setSettings({ eventDate: s.eventDate, eventTime: s.eventTime })
+        } else {
+          setSettings({ eventDate: 'Giovedì 18 Giugno 2026', eventTime: 'dalle ore 19:00 in poi' })
+        }
       } catch {
         setNotFound(true)
       } finally {
         setLoading(false)
-      }
-
-      try {
-        const settingsRes = await fetch('/api/settings')
-        if (settingsRes.ok) {
-          const s = await settingsRes.json()
-          setSettings({ eventDate: s.eventDate, eventTime: s.eventTime })
-        }
-      } catch {
-        // usa i valori di default
       }
     }
     if (token) fetchData()
