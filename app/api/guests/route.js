@@ -15,14 +15,14 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const { name, email } = await request.json()
+    const { name, email, phone } = await request.json()
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Nome e email sono obbligatori' }, { status: 400 })
     }
 
     const guest = await prisma.guest.create({
-      data: { name: name.trim(), email: email.trim().toLowerCase() },
+      data: { name: name.trim(), email: email.trim().toLowerCase(), phone: phone?.trim() || '' },
     })
 
     return NextResponse.json(guest, { status: 201 })

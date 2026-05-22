@@ -206,6 +206,7 @@ function SettingsSection() {
 function GuestsSection({ guests, onRefresh }) {
   const [newName, setNewName] = useState('')
   const [newEmail, setNewEmail] = useState('')
+  const [newPhone, setNewPhone] = useState('')
   const [adding, setAdding] = useState(false)
   const [addError, setAddError] = useState('')
   const [sendingId, setSendingId] = useState(null)
@@ -225,12 +226,13 @@ function GuestsSection({ guests, onRefresh }) {
       const res = await fetch('/api/guests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName, email: newEmail }),
+        body: JSON.stringify({ name: newName, email: newEmail, phone: newPhone }),
       })
       const data = await res.json()
       if (res.ok) {
         setNewName('')
         setNewEmail('')
+        setNewPhone('')
         onRefresh()
         notify('Ospite aggiunto!')
       } else {
@@ -345,6 +347,13 @@ function GuestsSection({ guests, onRefresh }) {
           required
           className="flex-1 min-w-[200px] px-4 py-2.5 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
         />
+        <input
+          type="tel"
+          value={newPhone}
+          onChange={(e) => setNewPhone(e.target.value)}
+          placeholder="Telefono (opzionale)"
+          className="flex-1 min-w-[160px] px-4 py-2.5 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500"
+        />
         <button
           type="submit"
           disabled={adding}
@@ -392,6 +401,7 @@ function GuestsSection({ guests, onRefresh }) {
               <tr className="border-b border-gray-700" style={{ background: 'rgba(255,255,255,0.04)' }}>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Nome</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Email</th>
+                <th className="text-left px-4 py-3 text-gray-400 font-medium">Telefono</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Stato RSVP</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Persone</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium">Risposta</th>
@@ -407,6 +417,7 @@ function GuestsSection({ guests, onRefresh }) {
                 >
                   <td className="px-4 py-3 text-white font-medium">{guest.name}</td>
                   <td className="px-4 py-3 text-gray-300">{guest.email}</td>
+                  <td className="px-4 py-3 text-gray-300">{guest.phone || <span className="text-gray-600">—</span>}</td>
                   <td className="px-4 py-3">
                     <RsvpBadge status={guest.rsvpStatus} />
                   </td>

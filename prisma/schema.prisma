@@ -15,6 +15,7 @@ model Guest {
   token       String    @unique @default(uuid())
   rsvpStatus  String    @default("pending") // pending | attending | not_attending
   partySize   Int       @default(1)
+  phone       String    @default("")
   rsvpAt      DateTime?
   invitedAt   DateTime?
   createdAt   DateTime  @default(now())
