@@ -440,7 +440,7 @@ function GuestsSection({ guests, onRefresh }) {
                 >
                   <td className="px-4 py-3 text-white font-medium">{guest.name}</td>
                   <td className="px-4 py-3 text-gray-300">{guest.email}</td>
-                  <td className="px-4 py-3 text-gray-300">{guest.phone || <span className="text-gray-600">—</span>}</td>
+                  <td className="px-4 py-3 text-gray-300 whitespace-nowrap">{guest.phone || <span className="text-gray-600">—</span>}</td>
                   <td className="px-4 py-3">
                     <RsvpBadge status={guest.rsvpStatus} />
                   </td>
@@ -493,7 +493,7 @@ function GuestsSection({ guests, onRefresh }) {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex justify-end gap-2 flex-wrap">
+                      <div className="flex justify-end gap-2 flex-nowrap">
                         <button
                           onClick={() => { setConfirmingId(guest.id); setConfirmingSize(1) }}
                           className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
@@ -640,7 +640,7 @@ export default function AdminPage() {
         </button>
       </nav>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
 
         {/* Tabs */}
         <div className="flex gap-1 mb-8 p-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
