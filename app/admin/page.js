@@ -212,6 +212,8 @@ function GuestsSection({ guests, onRefresh }) {
   const [sendingId, setSendingId] = useState(null)
   const [sendingAll, setSendingAll] = useState(false)
   const [notification, setNotification] = useState(null)
+  const [confirmingId, setConfirmingId] = useState(null) // guest id in corso di conferma manuale
+  const [confirmingSize, setConfirmingSize] = useState(1)
 
   function notify(msg, type = 'success') {
     setNotification({ msg, type })
@@ -242,6 +244,27 @@ function GuestsSection({ guests, onRefresh }) {
       setAddError('Errore di rete')
     } finally {
       setAdding(false)
+    }
+  }
+
+  async function handleSetStatus(id, rsvpStatus, partySize = 1) {
+    try {
+      const res = await fetch(`/api/guests/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rsvpStatus, partySize }),
+      })
+      if (res.ok) {
+        onRefresh()
+        notify(rsvpStatus === 'attending' ? `Confermato (${partySize} ${partySize === 1 ? 'persona' : 'persone'})` : 'Segnato come non partecipante')
+      } else {
+        notify('Errore aggiornamento', 'error')
+      }
+    } catch {
+      notify('Errore di rete', 'error')
+    } finally {
+      setConfirmingId(null)
+      setConfirmingSize(1)
     }
   }
 
@@ -433,32 +456,79 @@ function GuestsSection({ guests, onRefresh }) {
                     {guest.invitedAt ? formatDate(guest.invitedAt) : <span className="text-yellow-500/70">Non inviato</span>}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => handleSendOne(guest.id)}
-                        disabled={sendingId === guest.id}
-                        className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
-                        style={{
-                          background: sendingId === guest.id ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.7)',
-                          color: '#fff',
-                          cursor: sendingId === guest.id ? 'not-allowed' : 'pointer',
-                        }}
-                      >
-                        {sendingId === guest.id ? '…' : guest.invitedAt ? 'Rinvia' : 'Invia'}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(guest.id)}
-                        className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
-                        style={{
-                          background: 'rgba(220,38,38,0.2)',
-                          color: '#fca5a5',
-                          border: '1px solid rgba(220,38,38,0.4)',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Elimina
-                      </button>
-                    </div>
+                    {confirmingId === guest.id ? (
+                      <div className="flex flex-col items-end gap-2">
+                        <p className="text-xs text-gray-400">In quanti vengono?</p>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4].map((n) => (
+                            <button
+                              key={n}
+                              onClick={() => setConfirmingSize(n)}
+                              className="w-8 h-8 rounded text-xs font-bold transition-all"
+                              style={{
+                                background: confirmingSize === n ? '#16a34a' : 'rgba(255,255,255,0.1)',
+                                color: confirmingSize === n ? '#fff' : '#9ca3af',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {n}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleSetStatus(guest.id, 'attending', confirmingSize)}
+                            className="px-3 py-1.5 rounded text-xs font-semibold"
+                            style={{ background: '#16a34a', color: '#fff', cursor: 'pointer' }}
+                          >
+                            Conferma
+                          </button>
+                          <button
+                            onClick={() => { setConfirmingId(null); setConfirmingSize(1) }}
+                            className="px-3 py-1.5 rounded text-xs font-semibold"
+                            style={{ background: 'rgba(255,255,255,0.1)', color: '#9ca3af', cursor: 'pointer' }}
+                          >
+                            Annulla
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex justify-end gap-2 flex-wrap">
+                        <button
+                          onClick={() => { setConfirmingId(guest.id); setConfirmingSize(1) }}
+                          className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
+                          style={{ background: 'rgba(22,163,74,0.2)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.4)', cursor: 'pointer' }}
+                        >
+                          ✓ Parteciperà
+                        </button>
+                        <button
+                          onClick={() => handleSetStatus(guest.id, 'not_attending')}
+                          className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
+                          style={{ background: 'rgba(220,38,38,0.15)', color: '#f87171', border: '1px solid rgba(220,38,38,0.3)', cursor: 'pointer' }}
+                        >
+                          ✗ Non verrà
+                        </button>
+                        <button
+                          onClick={() => handleSendOne(guest.id)}
+                          disabled={sendingId === guest.id}
+                          className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
+                          style={{
+                            background: sendingId === guest.id ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.7)',
+                            color: '#fff',
+                            cursor: sendingId === guest.id ? 'not-allowed' : 'pointer',
+                          }}
+                        >
+                          {sendingId === guest.id ? '…' : guest.invitedAt ? 'Rinvia' : 'Invia'}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(guest.id)}
+                          className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
+                          style={{ background: 'rgba(220,38,38,0.2)', color: '#fca5a5', border: '1px solid rgba(220,38,38,0.4)', cursor: 'pointer' }}
+                        >
+                          Elimina
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
