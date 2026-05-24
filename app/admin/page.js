@@ -496,14 +496,14 @@ function GuestsSection({ guests, onRefresh }) {
                       <div className="flex justify-end gap-2 flex-nowrap">
                         <button
                           onClick={() => { setConfirmingId(guest.id); setConfirmingSize(1) }}
-                          className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
+                          className="px-3 py-1.5 rounded text-xs font-semibold transition-all whitespace-nowrap"
                           style={{ background: 'rgba(22,163,74,0.2)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.4)', cursor: 'pointer' }}
                         >
                           ✓ Parteciperà
                         </button>
                         <button
                           onClick={() => handleSetStatus(guest.id, 'not_attending')}
-                          className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
+                          className="px-3 py-1.5 rounded text-xs font-semibold transition-all whitespace-nowrap"
                           style={{ background: 'rgba(220,38,38,0.15)', color: '#f87171', border: '1px solid rgba(220,38,38,0.3)', cursor: 'pointer' }}
                         >
                           ✗ Non verrà
